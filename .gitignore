@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+#other folders
+android/
+ios/
+apk/
+
+# Build output
+dist/
+
+# Capacitor Android build artifacts
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/src/main/assets/public/
+
+# IDE
+.cursor/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*

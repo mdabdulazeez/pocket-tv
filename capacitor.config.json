@@ -1,0 +1,16 @@
+{
+  "appId": "com.pockettv.app",
+  "appName": "Pocket TV",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#0a0a0a",
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  }
+}
