@@ -48,6 +48,45 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Free hosting (GitHub Pages + Cloudflare Worker)
+
+You can host the app for free so it works in the browser from a public URL. Streams are proxied through a free Cloudflare Worker (no FFmpeg in the cloud).
+
+### 1. Deploy the Cloudflare Worker (CORS proxy)
+
+You need a [Cloudflare](https://cloudflare.com) account (free).
+
+```bash
+cd worker
+npm install -g wrangler
+npx wrangler login
+npx wrangler deploy
+```
+
+After deploy, note your worker URL (e.g. `https://pocket-tv-proxy.<your-subdomain>.workers.dev`).
+
+### 2. Add the worker URL to your GitHub repo
+
+- Repo → **Settings** → **Secrets and variables** → **Actions**
+- **New repository secret**: name `PROXY_URL`, value = your worker URL (e.g. `https://pocket-tv-proxy.xxx.workers.dev`)
+
+### 3. Enable GitHub Pages
+
+- Repo → **Settings** → **Pages**
+- **Source**: GitHub Actions
+
+### 4. Deploy the frontend
+
+Push to the `main` branch (or run the workflow manually: **Actions** → **Deploy to GitHub Pages** → **Run workflow**). The workflow builds the app with your worker URL and deploys to Pages.
+
+Your app will be at: `https://<your-username>.github.io/<repo-name>/`
+
+**Free hosting limits**
+
+- **Cloudflare Worker**: 100,000 requests/day on the free plan.
+- **FFmpeg transcoding** is not available (Workers can’t run FFmpeg). Channels that need transcoding (e.g. some MPEG-2/H.265) may not play; most HLS streams will work.
+- **Audio track list** for non-HLS streams is not detected in production (no `/probe`); HLS multi-audio still works via the manifest.
+
 ## Architecture
 
 ### Proxy Endpoints
@@ -112,6 +151,10 @@ tv/
 ├── src/
 │   ├── App.jsx          # Main app — channels, player, UI
 │   └── main.jsx         # React entry point
+├── worker/              # Cloudflare Worker (CORS proxy for free hosting)
+│   ├── src/index.js
+│   └── wrangler.toml
+├── .github/workflows/   # GitHub Actions (e.g. deploy-pages.yml)
 ├── public/              # Static assets
 ├── android/             # Capacitor Android project
 ├── vite.config.js       # Vite config + proxy plugin + FFmpeg transcoder
@@ -130,6 +173,7 @@ tv/
 | RTMP streams unsupported | Browser can't play RTMP without Flash |
 | FFmpeg takes 3-5s to start | Inherent transcoding startup latency |
 | Audio switch on FFmpeg restarts stream | Must restart transcode to change audio track |
+| Free hosting (GitHub Pages) has no FFmpeg | Cloudflare Workers cannot run transcoding; some channels won’t play |
 
 ## License
 

@@ -108,11 +108,11 @@ const getCountryUrl = (code) => {
   return `https://iptv-org.github.io/iptv/countries/${code}.m3u`
 }
 
-// In dev mode, proxy runs on the same port via Vite middleware (no CORS issues)
-// In production/APK mode, use direct URLs (Capacitor WebView allows cross-origin)
+// Dev: Vite proxy (same origin). Production: Cloudflare Worker proxy if VITE_PROXY_URL set; else direct (e.g. APK).
 const isDev = import.meta.env.DEV
-const proxyM3u8 = (url) => isDev ? `/m3u8?url=${encodeURIComponent(url)}` : url
-const proxyRaw = (url) => isDev ? `/proxy?url=${encodeURIComponent(url)}` : url
+const proxyBase = import.meta.env.VITE_PROXY_URL || ''
+const proxyM3u8 = (url) => isDev ? `/m3u8?url=${encodeURIComponent(url)}` : (proxyBase ? `${proxyBase}/m3u8?url=${encodeURIComponent(url)}` : url)
+const proxyRaw = (url) => isDev ? `/proxy?url=${encodeURIComponent(url)}` : (proxyBase ? `${proxyBase}/proxy?url=${encodeURIComponent(url)}` : url)
 const proxyTranscode = (url, audioTrack = 0) => isDev ? `/transcode?url=${encodeURIComponent(url)}&audio=${audioTrack}` : url
 
 // Detect stream type from URL

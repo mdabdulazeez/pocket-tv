@@ -341,6 +341,7 @@ function streamProxyPlugin() {
 }
 
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react(), streamProxyPlugin()],
   server: {
     host: true,
